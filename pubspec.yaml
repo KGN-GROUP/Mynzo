@@ -1,14 +1,29 @@
 name: mynzo_app
-description: "Mynzo Social World Platform With 30 Profiles."
+description: "Mynzo Social World Platform With 30 Profiles and Logo Integration."
 publish_to: 'none'
+
+# ऐप का वर्ज़न नंबर
 version: 1.0.0+1
+
+# फ़्लटर SDK वर्ज़न की सेटिंग
 environment:
   sdk: '^3.5.0'
+
+# ऐप में इस्तेमाल होने वाले ज़रूरी पैकेजेस
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+# फ़्लटर की मुख्य सेटिंग्स और एसेट्स रजिस्ट्रेशन
 flutter:
   uses-material-design: true
+
+  # यह हिस्सा ऐप को आपकी logo.png इमेज को बिना एरर के पढ़ने की अनुमति देता है
   assets:
     - assets/images/logo.png
