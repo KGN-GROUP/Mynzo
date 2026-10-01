@@ -1,0 +1,54 @@
+name: Mynzo Complete App Builder
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build Flutter APK
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. रिपॉजिटरी से आपके सही फ़ोल्डर स्ट्रक्चर को डाउनलोड करना
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. जावा एनवायरनमेंट सेटअप (Android बिल्ड के लिए आवश्यक)
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # 3. फ़्लटर एनवायरनमेंट सेटअप (आपके वर्तमान स्ट्रक्चर के कम्पैटिबल)
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+          cache: true # फ़ास्ट बिल्ड के लिए कैशे इनेबल किया गया है
+
+      # 4. पुराने कैशे और अस्थायी बिल्ड फ़ाइलों को साफ़ करना
+      - name: Clean Flutter Cache
+        run: flutter clean
+
+      # 5. आपके pubspec.yaml के अनुसार पैकेजेस इंस्टॉल करना
+      - name: Install Dependencies
+        run: flutter pub get
+
+      # 6. फ़्लटर एंड्रॉइड रिलीज़ APK बिल्ड करना (नो-एरर सिंटैक्स)
+      - name: Build Android APK
+        run: flutter build apk --release --no-tree-shake-icons
+
+      # 7. तैयार हुई APK फ़ाइल को डाउनलोड के लिए GitHub पर अपलोड करना
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
