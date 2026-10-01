@@ -20,9 +20,6 @@ class MynzoCompletePlatform extends StatelessWidget {
   }
 }
 
-// ==========================================
-// 🧭 मुख्य नेविगेशन कंट्रोलर
-// ==========================================
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
 
@@ -61,9 +58,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 }
 
-// ==========================================
-// 📸 1. सोशल फीड स्क्रीन (लाइक, कमेंट, फोटो)
-// ==========================================
 class SocialFeedScreen extends StatefulWidget {
   const SocialFeedScreen({super.key});
 
@@ -96,17 +90,7 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.5,
-        title: Row(
-          children: [
-            Image.asset(
-              'assets/images/logo.png',
-              height: 32,
-              errorBuilder: (c, e, s) => const Icon(Icons.blur_circular, color: Colors.purple, size: 28),
-            ),
-            const SizedBox(width: 10),
-            const Text('Mynzo Feed', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          ],
-        ),
+        title: const Text('Mynzo Feed', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
       ),
       body: ListView.builder(
         itemCount: _postsData.length,
@@ -199,9 +183,6 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
   }
 }
 
-// ==========================================
-// 🔍 2. खोजें और डिस्कवर स्क्रीन
-// ==========================================
 class SearchAndDiscoverScreen extends StatelessWidget {
   const SearchAndDiscoverScreen({super.key});
 
@@ -218,9 +199,6 @@ class SearchAndDiscoverScreen extends StatelessWidget {
   }
 }
 
-// ==========================================
-// 💬 3. रियल-टाइम मैसेंजर (चैट रूम लिस्ट)
-// ==========================================
 class MessengerScreen extends StatelessWidget {
   const MessengerScreen({super.key});
 
@@ -250,15 +228,22 @@ class MessengerScreen extends StatelessWidget {
               padding: EdgeInsets.all(12.0),
               child: Text("व्यक्तिगत चैट (Direct Messaging)", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
             ),
-            _buildFriendItem(context, 1),
-            _buildFriendItem(context, 2),
-            _buildFriendItem(context, 3),
-            _buildFriendItem(context, 4),
-            _buildFriendItem(context, 5),
-            _buildFriendItem(context, 6),
-            _buildFriendItem(context, 7),
-            _buildFriendItem(context, 8),
-            _buildFriendItem(context, 9),
-            _buildFriendItem(context, 10),
-          ],
-        ),
+            // सीधे बिना किसी कस्टमाइज्ड लूप फ़ंक्शन के व्यवस्थित की गई 10 फ्रेंड्स लिस्ट
+            ListTile(
+              leading: const CircleAvatar(backgroundImage: NetworkImage("https://dicebear.com")),
+              title: const Text('Mynzo Friend 1'),
+              subtitle: const Text('ऑनलाइन / सक्रिय फ़ीड'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const ActiveChatRoom(chatTitle: "Friend 1"))),
+            ),
+            ListTile(
+              leading: const CircleAvatar(backgroundImage: NetworkImage("https://dicebear.com")),
+              title: const Text('Mynzo Friend 2'),
+              subtitle: const Text('ऑनलाइन / सक्रिय फ़ीड'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const ActiveChatRoom(chatTitle: "Friend 2"))),
+            ),
+            ListTile(
+              leading: const CircleAvatar(backgroundImage: NetworkImage("https://dicebear.com")),
+              title: const Text('Mynzo Friend 3'),
+              subtitle: const Text('ऑनलाइन / सक्रिय फ़ीड'),
