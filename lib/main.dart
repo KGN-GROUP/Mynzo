@@ -1,126 +1,164 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(const MynzoSocialApp());
+void main() => runApp(const MynzoCompletePlatform());
 
-class MynzoSocialApp extends StatelessWidget {
-  const MynzoSocialApp({super.key});
+class MynzoCompletePlatform extends StatelessWidget {
+  const MynzoCompletePlatform({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Mynzo - My Social World',
       theme: ThemeData(
-        useMaterial3: true, 
+        useMaterial3: true,
         colorSchemeSeed: const Color(0xFF33363F),
+        brightness: Brightness.light,
       ),
       debugShowCheckedModeBanner: false,
-      home: const InstagramProfileScreen(),
+      home: const MainNavigationScreen(),
     );
   }
 }
 
-class InstagramProfileScreen extends StatelessWidget {
-  const InstagramProfileScreen({super.key});
+// ==========================================
+// 🧭 मुख्य नेविगेशन कंट्रोलर
+// ==========================================
+class MainNavigationScreen extends StatefulWidget {
+  const MainNavigationScreen({super.key});
 
-  // 30 लोगों (Mynzo Members) की इंस्टाग्राम जैसी ऑटो-डेटा लिस्ट
-  List<Map<String, dynamic>> _generateProfiles() {
-    return List.generate(30, (index) {
-      int id = index + 1;
-      return {
-        "id": id,
-        "username": "mynzo_world_$id",
-        "name": "Mynzo Member $id",
-        "bio": "Building my social world on Mynzo Platform 🌐 | Member #$id",
-        "followers": 1200 + (id * 45),
-        "following": 300 + (id * 7),
-        "posts": 10 + id,
-        "avatar": "https://dicebear.com"
-      };
-    });
-  }
+  @override
+  State<MainNavigationScreen> createState() => _MainNavigationScreenState();
+}
+
+class _MainNavigationScreenState extends State<MainNavigationScreen> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _screens = [
+    const SocialFeedScreen(),
+    const SearchAndDiscoverScreen(),
+    const MessengerScreen(),
+    const MyUserProfileScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final profiles = _generateProfiles();
     return Scaffold(
-      backgroundColor: Colors.white,
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) => setState(() => _selectedIndex = index),
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: const Color(0xFF0095F6),
+        unselectedItemColor: Colors.grey,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'फीड'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), activeIcon: Icon(Icons.search_rounded), label: 'खोजें'),
+          BottomNavigationBarItem(icon: Icon(Icons.chat_bubble_outline), activeIcon: Icon(Icons.chat_bubble), label: 'चैट'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: 'प्रोफाइल'),
+        ],
+      ),
+    );
+  }
+}
+
+// ==========================================
+// 📸 1. सोशल फीड स्क्रीन (लाइक, कमेंट, फोटो और शेयर)
+// ==========================================
+class SocialFeedScreen extends StatefulWidget {
+  const SocialFeedScreen({super.key});
+
+  @override
+  State<SocialFeedScreen> createState() => _SocialFeedScreenState();
+}
+
+class _SocialFeedScreenState extends State<SocialFeedScreen> {
+  final List<Map<String, dynamic>> _postsData = List.generate(30, (index) {
+    int id = index + 1;
+    return {
+      "id": id,
+      "username": "mynzo_star_$id",
+      "name": "Mynzo User $id",
+      "avatar": "https://dicebear.com",
+      "postImage": "https://picsum.photos{id + 10}/600/400",
+      "caption": "Mynzo सोशल प्लेटफॉर्म पर आपका स्वागत है! अद्भुत अनुभव। 🌐 #SocialWorld",
+      "likes": 200 + (id * 12),
+      "isLiked": false,
+      "isBookmarked": false,
+      "commentsCount": 3 + id,
+      "comments": ["बहुत खूब!", "शानदार रील्स और फ़ोटो!"]
+    };
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.5,
         title: Row(
           children: [
-            // आपके द्वारा अपलोड की जाने वाली logo.png इमेज यहाँ लोड होगी
             Image.asset(
-              'assets/images/logo.png', 
-              height: 35, 
-              errorBuilder: (c, e, s) {
-                // अगर इमेज लोड होने में कोई दिक्कत आए, तो बैकअप के लिए यह आइकॉन दिखेगा
-                return const Icon(Icons.blur_circular, color: Colors.purple, size: 30);
-              },
+              'assets/images/logo.png',
+              height: 32,
+              errorBuilder: (c, e, s) => const Icon(Icons.blur_circular, color: Colors.purple, size: 28),
             ),
             const SizedBox(width: 10),
-            const Text(
-              'Mynzo Social Network', 
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
-            ),
+            const Text('Mynzo Feed', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           ],
         ),
       ),
-      body: ListView.separated(
-        itemCount: profiles.length,
-        separatorBuilder: (context, index) => const Divider(height: 1, color: Color(0xFFEEEEEE)),
+      body: ListView.builder(
+        itemCount: _postsData.length,
         itemBuilder: (context, index) {
-          final user = profiles[index];
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          final post = _postsData[index];
+          return Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            color: Colors.white,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                ListTile(
+                  leading: CircleAvatar(backgroundImage: NetworkImage(post['avatar'])),
+                  title: Text(post['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text("@${post['username']}"),
+                  trailing: const Icon(Icons.more_vert),
+                ),
+                Image.network(post['postImage'], width: double.infinity, fit: BoxFit.cover),
                 Row(
                   children: [
-                    // यूजर्स की प्रोफाइल पिक्चर (Dicebear API से ऑटो-जेनरेटेड)
-                    CircleAvatar(
-                      radius: 26, 
-                      backgroundColor: Colors.purple.shade100, 
-                      backgroundImage: NetworkImage(user['avatar']),
+                    IconButton(
+                      icon: Icon(post['isLiked'] ? Icons.favorite : Icons.favorite_border, color: post['isLiked'] ? Colors.red : Colors.black),
+                      onPressed: () => setState(() {
+                        post['isLiked'] = !post['isLiked'];
+                        post['isLiked'] ? post['likes']++ : post['likes']--;
+                      }),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(user['name'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                          Text("@${user['username']}", style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
-                        ],
-                      ),
+                    IconButton(icon: const Icon(Icons.chat_bubble_outline), onPressed: () => _showComments(context, post)),
+                    IconButton(icon: const Icon(Icons.share_outlined), onPressed: () {}),
+                    const Spacer(),
+                    IconButton(
+                      icon: Icon(post['isBookmarked'] ? Icons.bookmark : Icons.bookmark_border),
+                      onPressed: () => setState(() => post['isBookmarked'] = !post['isBookmarked']),
                     ),
-                    // इंस्टाग्राम जैसा ब्लू फॉलो बटन
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0095F6),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                      ),
-                      child: const Text('Follow', style: TextStyle(fontWeight: FontWeight.bold)),
-                    )
                   ],
                 ),
-                const SizedBox(height: 8),
-                Text(user['bio'], style: const TextStyle(fontSize: 14)),
-                const SizedBox(height: 10),
-                // पोस्ट्स, फॉलोअर्स और फॉलोइंग के आंकड़े (Stats)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    _buildStat("${user['posts']}", "Posts"),
-                    const SizedBox(width: 24),
-                    _buildStat("${user['followers']}", "Followers"),
-                    const SizedBox(width: 24),
-                    _buildStat("${user['following']}", "Following"),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("${post['likes']} लाइक्स", style: const TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 4),
+                      Text.rich(TextSpan(children: [
+                        TextSpan(text: "${post['username']} ", style: const TextStyle(fontWeight: FontWeight.bold)),
+                        TextSpan(text: post['caption']),
+                      ])),
+                      const SizedBox(height: 6),
+                      Text("सभी ${post['commentsCount']} कमेंट्स देखें...", style: const TextStyle(color: Colors.grey)),
+                      const SizedBox(height: 12),
+                    ],
+                  ),
                 )
               ],
             ),
@@ -130,14 +168,87 @@ class InstagramProfileScreen extends StatelessWidget {
     );
   }
 
-  // स्टेट्स का डिजाइन बनाने के लिए हेल्पर विजेट
-  Widget _buildStat(String value, String label) {
-    return Row(
-      children: [
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-        const SizedBox(width: 4),
-        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 14)),
-      ],
+  void _showComments(BuildContext context, Map<String, dynamic> post) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: Container(
+          height: 350,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              const Text('कमेंट्स अनुभाग', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Divider(),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: post['comments'].length,
+                  itemBuilder: (c, i) => ListTile(title: Text(post['comments'][i]), leading: const Icon(Icons.account_circle)),
+                ),
+              ),
+              TextField(
+                decoration: const InputDecoration(hintText: 'अपनी राय लिखें...', suffixIcon: Icon(Icons.send)),
+                onSubmitted: (v) {
+                  if (v.trim().isNotEmpty) {
+                    setState(() { post['comments'].add(v); post['commentsCount']++; });
+                    Navigator.pop(context);
+                  }
+                },
+              )
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
+
+// ==========================================
+// 🔍 2. खोजें और डिस्कवर स्क्रीन
+// ==========================================
+class SearchAndDiscoverScreen extends StatelessWidget {
+  const SearchAndDiscoverScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const TextField(decoration: InputDecoration(hintText: 'Mynzo वीडियो, फ़ोटो खोजें...', prefixIcon: Icon(Icons.search), border: InputBorder.none))),
+      body: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 2, mainAxisSpacing: 2),
+        itemCount: 30,
+        itemBuilder: (c, i) => Image.network("https://picsum.photos{i + 50}/200", fit: BoxFit.cover),
+      ),
+    );
+  }
+}
+
+// ==========================================
+// 💬 3. रियल-टाइम मैसेंजर (वन-टू-वन और ग्रुप चैट)
+// ==========================================
+class MessengerScreen extends StatelessWidget {
+  const MessengerScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Mynzo चैट रूम', style: TextStyle(fontWeight: FontWeight.bold))),
+      body: ListView(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(12.0),
+            child: Text("ग्रुप्स (Groups)", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+          ),
+          ListTile(
+            leading: const CircleAvatar(backgroundColor: Colors.purple, child: Icon(Icons.group, color: Colors.white)),
+            title: const Text('मायनज़ो ग्लोबल कम्युनिटी ग्रुप'),
+            subtitle: const Text('Admin: स्वागत है सभी का!'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const ActiveChatRoom(chatTitle: "ग्लोबल कम्युनिटी"))),
+          ),
+          const Divider(),
+          const Padding(
+            padding: EdgeInsets.all(12.0),
+            child: Text("व्यक्तिगत चैट (Direct Messaging)", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+          ),
+          ...List.generate(10, (index) {
