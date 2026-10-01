@@ -1,4 +1,4 @@
-name: Mynzo Complete App Builder
+name: Mynzo Multi-Platform Builder (APK, AAB, iOS)
 
 on:
   push:
@@ -9,46 +9,105 @@ on:
       - main
 
 jobs:
-  build:
-    name: Build Flutter APK
+  # 🤖 1. एंड्रॉइड बिल्ड जॉब (यह APK और AAB दोनों बनाएगा)
+  android_build:
+    name: Build Android App (APK & AAB)
     runs-on: ubuntu-latest
 
     steps:
-      # 1. रिपॉजिटरी से आपके सही फ़ोल्डर स्ट्रक्चर को डाउनलोड करना
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 2. जावा एनवायरनमेंट सेटअप (Android बिल्ड के लिए आवश्यक)
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      # 3. फ़्लटर एनवायरनमेंट सेटअप (आपके वर्तमान स्ट्रक्चर के कम्पैटिबल)
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.0'
           channel: 'stable'
-          cache: true # फ़ास्ट बिल्ड के लिए कैशे इनेबल किया गया है
+          cache: false
 
-      # 4. पुराने कैशे और अस्थायी बिल्ड फ़ाइलों को साफ़ करना
-      - name: Clean Flutter Cache
+      # यह जादुई स्टेप फ्रेश एंड्रॉइड और iOS का ढांचा खुद तैयार कर देगा
+      - name: Auto Structural Matrix Build
+        run: |
+          mkdir -p ../backup_lib ../backup_assets
+          if [ -f "lib/main.dart" ]; then cp lib/main.dart ../backup_lib/main.dart; fi
+          if [ -f "main.dart" ]; then cp main.dart ../backup_lib/main.dart; fi
+          if [ -f "pubspec.yaml" ]; then cp pubspec.yaml ../backup_pubspec.yaml; fi
+          if [ -f "image_q6aPih.png" ]; then cp image_q6aPih.png ../backup_assets/logo.png; fi
+          if [ -f "logo.png" ]; then cp logo.png ../backup_assets/logo.png; fi
+          
+          rm -rf * .github || true
+          flutter create --org com.mynzo --project-name mynzo_app --platforms=android,ios .
+          
+          mkdir -p lib assets/images
+          if [ -f "../backup_lib/main.dart" ]; then cp ../backup_lib/main.dart lib/main.dart; fi
+          if [ -f "../backup_pubspec.yaml" ]; then cp ../backup_pubspec.yaml pubspec.yaml; fi
+          if [ -f "../backup_assets/logo.png" ]; then cp ../backup_assets/logo.png assets/images/logo.png; fi
+
+      - name: Clean Cache
         run: flutter clean
 
-      # 5. आपके pubspec.yaml के अनुसार पैकेजेस इंस्टॉल करना
+      - name: Fetch Packages
+        run: flutter pub get
+
+      # 📦 APK फ़ाइल बनाना
+      - name: Build Android APK
+        run: flutter build apk --release --no-tree-shake-icons --no-pub
+
+      # 📦 AAB (Google Play Store के लिए) फ़ाइल बनाना
+      - name: Build Android App Bundle (AAB)
+        run: flutter build appbundle --release --no-pub
+
+      # 📤 दोनों एंड्रॉइड फ़ाइलों को गिटहब पर अपलोड करना
+      - name: Upload Android Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release-files
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
+
+  # 🍏 2. iOS बिल्ड जॉब (यह macOS मशीन पर चलेगा ताकि आईओएस कोडिंग पास हो सके)
+  ios_build:
+    name: Build iOS App Structure
+    runs-on: macos-latest
+    needs: android_build # एंड्रॉइड पास होने के बाद यह शुरू होगा
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+          cache: false
+
+      - name: Re-create Shared Matrix
+        run: |
+          mkdir -p ../backup_lib
+          if [ -f "lib/main.dart" ]; then cp lib/main.dart ../backup_lib/main.dart; fi
+          if [ -f "main.dart" ]; then cp main.dart ../backup_lib/main.dart; fi
+          rm -rf * .github || true
+          flutter create --org com.mynzo --project-name mynzo_app --platforms=ios .
+          if [ -f "../backup_lib/main.dart" ]; then cp ../backup_lib/main.dart lib/main.dart; fi
+
       - name: Install Dependencies
         run: flutter pub get
 
-      # 6. फ़्लटर एंड्रॉइड रिलीज़ APK बिल्ड करना (नो-एरर सिंटैक्स)
-      - name: Build Android APK
-        run: flutter build apk --release --no-tree-shake-icons
+      # 📦 iOS के कोड और फ़ाइलों को कंपाइल करना (Xcode नो-साइन हुक के साथ)
+      - name: Build iOS Framework
+        run: flutter build ios --release --no-codesign --no-pub
 
-      # 7. तैयार हुई APK फ़ाइल को डाउनलोड के लिए GitHub पर अपलोड करना
-      - name: Upload APK Artifact
+      # 📤 iOS रनर फ़ाइलों को अपलोड करना
+      - name: Upload iOS Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-          if-no-files-found: error
+          name: ios-release-files
+          path: build/ios/iphoneos
