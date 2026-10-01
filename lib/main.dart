@@ -51,10 +51,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         selectedItemColor: const Color(0xFF0095F6),
         unselectedItemColor: Colors.grey,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'फीड'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), activeIcon: Icon(Icons.search_rounded), label: 'खोजें'),
-          BottomNavigationBarItem(icon: Icon(Icons.chat_bubble_outline), activeIcon: Icon(Icons.chat_bubble), label: 'चैट'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: 'प्रोफाइल'),
+          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'फीड'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'खोजें'),
+          BottomNavigationBarItem(icon: Icon(Icons.chat_bubble_outline), label: 'चैट'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'प्रोफाइल'),
         ],
       ),
     );
@@ -96,17 +96,7 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.5,
-        title: Row(
-          children: [
-            Image.asset(
-              'assets/images/logo.png',
-              height: 32,
-              errorBuilder: (c, e, s) => const Icon(Icons.blur_circular, color: Colors.purple, size: 28),
-            ),
-            const SizedBox(width: 10),
-            const Text('Mynzo Feed', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          ],
-        ),
+        title: const Text('Mynzo Feed', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
       ),
       body: ListView.builder(
         itemCount: _postsData.length,
@@ -122,7 +112,6 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
                   leading: CircleAvatar(backgroundImage: NetworkImage(post['avatar'])),
                   title: Text(post['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
                   subtitle: Text("@${post['username']}"),
-                  trailing: const Icon(Icons.more_vert),
                 ),
                 Image.network(post['postImage'], width: double.infinity, fit: BoxFit.cover),
                 Row(
@@ -135,7 +124,6 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
                       }),
                     ),
                     IconButton(icon: const Icon(Icons.chat_bubble_outline), onPressed: () => _showComments(context, post)),
-                    IconButton(icon: const Icon(Icons.share_outlined), onPressed: () {}),
                     const Spacer(),
                     IconButton(
                       icon: Icon(post['isBookmarked'] ? Icons.bookmark : Icons.bookmark_border),
@@ -150,10 +138,7 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
                     children: [
                       Text("${post['likes']} लाइक्स", style: const TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
-                      Text.rich(TextSpan(children: [
-                        TextSpan(text: "${post['username']} ", style: const TextStyle(fontWeight: FontWeight.bold)),
-                        TextSpan(text: post['caption']),
-                      ])),
+                      Text("${post['username']}: ${post['caption']}"),
                       const SizedBox(height: 6),
                       Text("सभी ${post['commentsCount']} कमेंट्स देखें...", style: const TextStyle(color: Colors.grey)),
                       const SizedBox(height: 12),
@@ -213,7 +198,7 @@ class SearchAndDiscoverScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const TextField(decoration: InputDecoration(hintText: 'Mynzo वीडियो, फ़ोटो खोजें...', prefixIcon: Icon(Icons.search), border: InputBorder.none))),
+      appBar: AppBar(title: const Text('Mynzo खोजें')),
       body: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 2, mainAxisSpacing: 2),
         itemCount: 30,
@@ -224,7 +209,7 @@ class SearchAndDiscoverScreen extends StatelessWidget {
 }
 
 // ==========================================
-// 💬 3. रियल-टाइम मैसेंजर (सरल क्लीन लेआउट)
+// 💬 3. रियल-टाइम मैसेंजर (चैट रूम लिस्ट)
 // ==========================================
 class MessengerScreen extends StatelessWidget {
   const MessengerScreen({super.key});
@@ -233,23 +218,47 @@ class MessengerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Mynzo चैट रूम', style: TextStyle(fontWeight: FontWeight.bold))),
-      body: ListView(
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Text("ग्रुप्स (Groups)", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
-          ),
-          ListTile(
-            leading: const CircleAvatar(backgroundColor: Colors.purple, child: Icon(Icons.group, color: Colors.white)),
-            title: const Text('मायनज़ो ग्लोबल कम्युनिटी ग्रुप'),
-            subtitle: const Text('Admin: स्वागत है सभी का!'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (c) => const ActiveChatRoom(chatTitle: "ग्लोबल कम्युनिटी")));
-            },
-          ),
-          const Divider(),
-          const Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Text("व्यक्तिगत चैट (Direct Messaging)", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
-          ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(12.0),
+              child: Text("ग्रुप्स (Groups)", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+            ),
+            ListTile(
+              leading: const CircleAvatar(backgroundColor: Colors.purple, child: Icon(Icons.group, color: Colors.white)),
+              title: const Text('मायनज़ो ग्लोबल कम्युनिटी ग्रुप'),
+              subtitle: const Text('Admin: स्वागत है सभी का!'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (c) => const ActiveChatRoom(chatTitle: "ग्लोबल कम्युनिटी")));
+              },
+            ),
+            const Divider(),
+            const Padding(
+              padding: EdgeInsets.all(12.0),
+              child: Text("व्यक्तिगत चैट (Direct Messaging)", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+            ),
+            _buildFriendItem(context, 1),
+            _buildFriendItem(context, 2),
+            _buildFriendItem(context, 3),
+            _buildFriendItem(context, 4),
+            _buildFriendItem(context, 5),
+            _buildFriendItem(context, 6),
+            _buildFriendItem(context, 7),
+            _buildFriendItem(context, 8),
+            _buildFriendItem(context, 9),
+            _buildFriendItem(context, 10),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFriendItem(BuildContext context, int id) {
+    return ListTile(
+      leading: CircleAvatar(backgroundImage: NetworkImage("https://dicebear.com")),
+      title: Text('Mynzo Friend $id'),
+      subtitle: const Text('ऑनलाइन / सक्रिय फ़ीड'),
+      trailing: Row(
