@@ -224,7 +224,7 @@ class SearchAndDiscoverScreen extends StatelessWidget {
 }
 
 // ==========================================
-// 💬 3. रियल-टाइम मैसेंजर (सरल फिक्स्ड लेआउट)
+// 💬 3. रियल-टाइम मैसेंजर (सरल क्लीन लेआउट)
 // ==========================================
 class MessengerScreen extends StatelessWidget {
   const MessengerScreen({super.key});
