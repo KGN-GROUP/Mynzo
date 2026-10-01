@@ -96,7 +96,17 @@ class _SocialFeedScreenState extends State<SocialFeedScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.5,
-        title: const Text('Mynzo Feed', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/images/logo.png',
+              height: 32,
+              errorBuilder: (c, e, s) => const Icon(Icons.blur_circular, color: Colors.purple, size: 28),
+            ),
+            const SizedBox(width: 10),
+            const Text('Mynzo Feed', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          ],
+        ),
       ),
       body: ListView.builder(
         itemCount: _postsData.length,
@@ -252,13 +262,3 @@ class MessengerScreen extends StatelessWidget {
             _buildFriendItem(context, 10),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildFriendItem(BuildContext context, int id) {
-    return ListTile(
-      leading: CircleAvatar(backgroundImage: NetworkImage("https://dicebear.com")),
-      title: Text('Mynzo Friend $id'),
-      subtitle: const Text('ऑनलाइन / सक्रिय फ़ीड'),
-      trailing: Row(
