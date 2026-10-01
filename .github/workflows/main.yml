@@ -31,7 +31,6 @@ jobs:
           channel: 'stable'
           cache: false
 
-      # यह स्टेप आपकी किसी भी पुरानी खराब फाइल को हटाकर बिल्कुल फ्रेश और 100% एरर-फ्री स्ट्रक्चर लिखेगा
       - name: Auto Clean Sheets & Inject Perfect Code
         run: |
           mkdir -p ../backup_assets
@@ -44,7 +43,6 @@ jobs:
           mkdir -p lib assets/images
           if [ -f "../backup_assets/logo.png" ]; then cp ../backup_assets/logo.png assets/images/logo.png; fi
 
-          # यहाँ बिना किसी ब्रैकेट एरर के पूरा 4-मॉड्यूल सोशल मीडिया कोड गिटहब खुद लिखेगा
           cat << 'EOF' > lib/main.dart
           import 'package:flutter/material.dart';
 
@@ -221,3 +219,6 @@ jobs:
                       int id = i + 1;
                       return ListTile(
                         leading: CircleAvatar(backgroundImage: NetworkImage("https://dicebear.com")),
+                        title: Text('Mynzo Friend $id'),
+                        subtitle: const Text('ऑनलाइन / सक्रिय फ़ीड'),
+                        trailing: Row(
