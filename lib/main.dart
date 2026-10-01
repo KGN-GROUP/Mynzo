@@ -54,7 +54,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'फीड'),
           BottomNavigationBarItem(icon: Icon(Icons.search), activeIcon: Icon(Icons.search_rounded), label: 'खोजें'),
           BottomNavigationBarItem(icon: Icon(Icons.chat_bubble_outline), activeIcon: Icon(Icons.chat_bubble), label: 'चैट'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: 'प्रोफाइल'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: 'प्रोفाइल'),
         ],
       ),
     );
@@ -62,7 +62,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 }
 
 // ==========================================
-// 📸 1. सोशल फीड स्क्रीन (लाइक, कमेंट, फोटो और शेयर)
+// 📸 1. सोशल फीड स्क्रीन (लाइक, कमेंट, फोटो)
 // ==========================================
 class SocialFeedScreen extends StatefulWidget {
   const SocialFeedScreen({super.key});
@@ -224,7 +224,7 @@ class SearchAndDiscoverScreen extends StatelessWidget {
 }
 
 // ==========================================
-// 💬 3. रियल-टाइम मैसेंजर (वन-टू-वन और ग्रुप चैट)
+// 💬 3. रियल-टाइम मैसेंजर (चैट लिस्ट स्क्रीन)
 // ==========================================
 class MessengerScreen extends StatelessWidget {
   const MessengerScreen({super.key});
@@ -233,22 +233,20 @@ class MessengerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Mynzo चैट रूम', style: TextStyle(fontWeight: FontWeight.bold))),
-      body: ListView(
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Text("ग्रुप्स (Groups)", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
-          ),
-          ListTile(
-            leading: const CircleAvatar(backgroundColor: Colors.purple, child: Icon(Icons.group, color: Colors.white)),
-            title: const Text('मायनज़ो ग्लोबल कम्युनिटी ग्रुप'),
-            subtitle: const Text('Admin: स्वागत है सभी का!'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const ActiveChatRoom(chatTitle: "ग्लोबल कम्युनिटी"))),
-          ),
-          const Divider(),
-          const Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Text("व्यक्तिगत चैट (Direct Messaging)", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
-          ),
-          ...List.generate(10, (index) {
+      body: ListView.builder(
+        itemCount: 11, // 1 ग्रुप चैट + 10 फ्रेंड्स डायरेक्ट मैसेजिंग
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: Text("ग्रुप्स (Groups)", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+                ),
+                ListTile(
+                  leading: const CircleAvatar(backgroundColor: Colors.purple, child: Icon(Icons.group, color: Colors.white)),
+                  title: const Text('मायनज़ो ग्लोबल कम्युनिटी ग्रुप'),
+                  subtitle: const Text('Admin: स्वागत है सभी का!'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const ActiveChatRoom(chatTitle: "ग्लोबल कम्युनिटी"))),
